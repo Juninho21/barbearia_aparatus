@@ -1,4 +1,5 @@
 import Image from "next/image";
+export const dynamic = "force-dynamic";
 import Header from "./_components/header";
 import SearchInput from "./_components/search-input";
 import banner from "../public/banner.png";
@@ -14,16 +15,24 @@ import {
 import QuickSearchButtons from "./_components/quick-search-buttons";
 
 const Home = async () => {
-  const recommendedBarbershops = await prisma.barbershop.findMany({
-    orderBy: {
-      name: "asc",
-    },
-  });
-  const popularBarbershops = await prisma.barbershop.findMany({
-    orderBy: {
-      name: "desc",
-    },
-  });
+  let recommendedBarbershops: any[] = [];
+  let popularBarbershops: any[] = [];
+
+  try {
+    recommendedBarbershops = await prisma.barbershop.findMany({
+      orderBy: { name: "asc" },
+    });
+  } catch (err) {
+    console.warn("Falha ao buscar barbearias recomendadas (Prisma)", err);
+  }
+
+  try {
+    popularBarbershops = await prisma.barbershop.findMany({
+      orderBy: { name: "desc" },
+    });
+  } catch (err) {
+    console.warn("Falha ao buscar barbearias populares (Prisma)", err);
+  }
   return (
     <main>
       <Header />
